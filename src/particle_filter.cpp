@@ -5,6 +5,9 @@
  *      Author: Tiffany Huang
  */
 
+/*
+	Created by Jonas Chan for Udacity CARND Kidnapped Vehicle Project
+*/
 #define _USE_MATH_DEFINES
 #include <random>
 #include <algorithm>
@@ -269,27 +272,27 @@ void ParticleFilter::resample() {
 	}
 
 	uniform_int_distribution<int> uniintdist(0, num_particles - 1);
-	auto index = uniintdist(gen);
+	auto uniform_index = uniintdist(gen);
 
 	// Get maximum weight using the *max_element which returns values
 	// *Note to self: max_element returns iterators not values!!!.
 	double maximum_weight = *max_element(updatedWeights.begin(), updatedWeights.end());
 
 	uniform_real_distribution<double> unirealdist(0.0, maximum_weight);
-	double beta = 0.0;
+	double resamplingBeta = 0.0;
 
 	vector<Particle> new_particles;
 	for (int i = 0; i < num_particles; i++) 
 	{
-		beta += unirealdist(gen) * 2.0;
+		resamplingBeta += unirealdist(gen) * 2.0;
 		
-		while (beta > updatedWeights[index])
+		while (resamplingBeta > updatedWeights[uniform_index])
 		{
-			beta -= updatedWeights[index];
-			index = (index + 1) % num_particles;
+			resamplingBeta -= updatedWeights[uniform_index];
+			uniform_index = (uniform_index + 1) % num_particles;
 		}
 
-		new_particles.push_back(particles[index]);
+		new_particles.push_back(particles[uniform_index]);
 	}
 
 	particles = new_particles;
